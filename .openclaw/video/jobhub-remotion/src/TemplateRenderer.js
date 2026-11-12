@@ -198,7 +198,9 @@ function TemplateScene({scene, spec, style, vertical}) {
   const isProduct = String(scene.type || '').includes('product') || style.id.includes('product');
   const isTitle = String(scene.type || '') === 'title' || String(scene.type || '').includes('hook') || String(scene.type || '').includes('product_title');
   const pad = vertical ? '132px 62px 120px' : '118px 100px 92px';
-  const titleSize = vertical ? (title.length > 34 ? '58px' : '76px') : (title.length > 58 ? '58px' : '76px');
+  const titleSize = vertical
+    ? (title.length > 55 ? '46px' : title.length > 34 ? '56px' : '72px')
+    : (title.length > 65 ? '48px' : title.length > 45 ? '58px' : '72px');
   const bodySize = vertical ? '34px' : '34px';
   const contentTransform = `translateY(${(1 - visible) * 38}px)`;
 
@@ -225,17 +227,32 @@ function TemplateScene({scene, spec, style, vertical}) {
         React.createElement(Badge, {style, vertical, text: scene.source_badge || scene.badge || style.badge, opacity: visible}),
         React.createElement('h1', {style: {
           margin: vertical ? '36px 0 22px' : '34px 0 24px', color: isOutro ? style.accent : style.text,
-          fontFamily: style.font, fontSize: titleSize, lineHeight: 1.08, fontWeight: 880,
-          letterSpacing: style.mode === 'light' ? '-1.5px' : '-1px', textShadow: style.mode === 'dark' ? `0 0 42px ${alpha(style.accent, 0.25)}` : 'none',
-        }}, isOutro ? String(scene.channel || 'Huybrid') : title),
+          fontFamily: style.font, fontSize: titleSize, lineHeight: 1.12, fontWeight: 880,
+          letterSpacing: style.mode === 'light' ? '-1.5px' : '-0.5px', textShadow: style.mode === 'dark' ? `0 0 42px ${alpha(style.accent, 0.25)}` : 'none',
+          wordBreak: 'break-word', overflowWrap: 'break-word', maxWidth: vertical ? '920px' : '1480px',
+        }}, isOutro ? String(scene.channel || 'Huybrid Network') : title),
         subtitle && !isOutro && React.createElement('p', {style: {
           margin: '0 0 34px', color: style.muted, fontSize: vertical ? '30px' : '32px', lineHeight: 1.36, fontWeight: 460,
-          maxWidth: vertical ? '900px' : '1250px',
+          maxWidth: vertical ? '900px' : '1250px', wordBreak: 'break-word', overflowWrap: 'break-word',
         }}, subtitle),
-        isOutro && React.createElement('p', {style: {
-          margin: '8px 0 0', color: style.text, fontSize: vertical ? '42px' : '52px', lineHeight: 1.28, fontWeight: 760,
-          maxWidth: vertical ? '840px' : '1200px',
-        }}, String(scene.cta || 'Follow Huybrid')),
+        isOutro && React.createElement('div', {style: {
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '22px', marginTop: '12px',
+        }},
+          React.createElement('p', {style: {
+            margin: '0', color: style.text, fontSize: vertical ? '36px' : '46px', lineHeight: 1.3, fontWeight: 760,
+            maxWidth: vertical ? '860px' : '1200px', wordBreak: 'break-word', overflowWrap: 'break-word',
+          }}, String(scene.cta || 'Đăng ký kênh để theo dõi phân tích mới')),
+          React.createElement('div', {style: {
+            display: 'inline-flex', alignItems: 'center', gap: '14px',
+            background: 'linear-gradient(135deg, #ff0000 0%, #cc0000 100%)',
+            color: '#fff', padding: vertical ? '14px 38px' : '16px 44px', borderRadius: '40px',
+            fontSize: vertical ? '26px' : '28px', fontWeight: 900, letterSpacing: '1px',
+            boxShadow: '0 8px 30px rgba(255,0,0,0.45)',
+          }},
+            React.createElement('span', null, 'ĐĂNG KÝ KÊNH'),
+            React.createElement('span', null, '🔔')
+          )
+        ),
         !isTitle && !isOutro && React.createElement(PointList, {points: points.length ? points : [subtitle || title], style, vertical, frame}),
         isProduct && isTitle && points.length > 0 && React.createElement(PointList, {points, style, vertical, frame}),
         Array.isArray(scene.tags) && scene.tags.length > 0 && React.createElement('div', {style: {display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: isTitle ? 'center' : 'flex-start', marginTop: '18px'}},

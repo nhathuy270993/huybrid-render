@@ -6,6 +6,17 @@ const React = require('react');
 const { AbsoluteFill, useCurrentFrame, useVideoConfig } = require('remotion');
 const { presence, slideY, slideX, staggerItem, BG_DARK, CYAN, AMBER, WHITE, MUTED, FONT } = require('./transitions');
 
+const getInsightHeadFontSize = (len, hasImage) => {
+  if (hasImage) {
+    if (len > 50) return '44px';
+    if (len > 35) return '50px';
+    return '58px';
+  }
+  if (len > 55) return '48px';
+  if (len > 38) return '56px';
+  return '66px';
+};
+
 const InsightScene = ({ scene }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
@@ -30,22 +41,22 @@ const InsightScene = ({ scene }) => {
   const hasImage   = imageUrl.length > 0;
 
   // Headline
-  const headAlpha = presence(frame, 0,  22, totalF, 20);
-  const headY     = slideY(frame, 0, 22, 45);
+  const headAlpha = presence(frame, 0,  20, totalF, 18);
+  const headY     = slideY(frame, 0, 20, 40);
 
   // Divider line
-  const lineAlpha = presence(frame, 20, 16, totalF, 18);
+  const lineAlpha = presence(frame, 16, 14, totalF, 16);
 
-  // Bullet points — stagger from frame 32
-  const pt0 = staggerItem(frame, 32, 16, 0, 20);
-  const pt1 = staggerItem(frame, 32, 16, 1, 20);
-  const pt2 = staggerItem(frame, 32, 16, 2, 20);
-  const pt3 = staggerItem(frame, 32, 16, 3, 20);
-  const pt4 = staggerItem(frame, 32, 16, 4, 20);
+  // Bullet points
+  const pt0 = staggerItem(frame, 26, 14, 0, 18);
+  const pt1 = staggerItem(frame, 26, 14, 1, 18);
+  const pt2 = staggerItem(frame, 26, 14, 2, 18);
+  const pt3 = staggerItem(frame, 26, 14, 3, 18);
+  const pt4 = staggerItem(frame, 26, 14, 4, 18);
   const ptItems = [pt0, pt1, pt2, pt3, pt4];
 
   // Source note
-  const noteAlpha = presence(frame, 32 + points.length * 16 + 20, 18, totalF, 16);
+  const noteAlpha = presence(frame, 26 + points.length * 14 + 16, 16, totalF, 14);
 
   return React.createElement(
     AbsoluteFill,
@@ -61,37 +72,38 @@ const InsightScene = ({ scene }) => {
     React.createElement('div', { style: {
       position: 'absolute', left: '-150px', top: '20%',
       width: '700px', height: '700px', borderRadius: '50%',
-      background: `radial-gradient(ellipse, rgba(255,179,0,0.07) 0%, transparent 65%)`,
+      background: `radial-gradient(ellipse, rgba(255,179,0,0.08) 0%, transparent 65%)`,
       opacity: headAlpha,
     }}),
 
     // Source badge
     React.createElement('div', { style: {
-      position: 'absolute', top: '68px', left: '90px',
-      color: `rgba(255,179,0,0.85)`, fontSize: '28px', fontWeight: 700,
+      position: 'absolute', top: '60px', left: '80px',
+      color: `rgba(255,179,0,0.9)`, fontSize: '26px', fontWeight: 800,
       letterSpacing: '4px', textTransform: 'uppercase', opacity: headAlpha,
-    }}, '💡 TECH INSIGHT'),
+    }}, '💡 PHÂN TÍCH CHUYÊN SÂU'),
 
-    // Main content — two-column when image present
+    // Main content container with boxSizing border-box
     React.createElement('div', { style: {
       display: 'flex', flexDirection: 'row', alignItems: 'stretch',
-      height: '100%', width: '100%',
+      height: '100%', width: '100%', boxSizing: 'border-box',
     }},
 
       // LEFT: text column
       React.createElement('div', { style: {
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
-        padding: '120px 80px 100px 100px',
+        padding: '110px 60px 80px 80px', boxSizing: 'border-box',
         flex: hasImage ? '0 0 58%' : '1',
         maxWidth: hasImage ? '58%' : '1680px',
       }},
 
         // Headline
         React.createElement('h1', { style: {
-          color: AMBER, margin: '0 0 28px',
-          fontSize: headline.length > 50 ? '56px' : '68px',
-          fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.5px',
-          textShadow: `0 0 48px rgba(255,179,0,0.3)`,
+          color: AMBER, margin: '0 0 24px',
+          fontSize: getInsightHeadFontSize(headline.length, hasImage),
+          fontWeight: 900, lineHeight: 1.15, letterSpacing: '-0.5px',
+          textShadow: `0 0 48px rgba(255,179,0,0.35)`,
+          wordBreak: 'break-word', overflowWrap: 'break-word',
           opacity: headAlpha, transform: `translateY(${headY}px)`,
         }}, headline),
 
@@ -99,29 +111,33 @@ const InsightScene = ({ scene }) => {
         React.createElement('div', { style: {
           width: '120px', height: '4px',
           background: `linear-gradient(90deg, ${AMBER} 0%, transparent 100%)`,
-          marginBottom: '36px', borderRadius: '2px',
+          marginBottom: '28px', borderRadius: '2px',
           opacity: lineAlpha,
         }}),
 
-        // Bullet points
+        // Bullet points inside styled card
         React.createElement('div', { style: {
-          display: 'flex', flexDirection: 'column', gap: '20px',
+          display: 'flex', flexDirection: 'column', gap: '16px',
+          background: 'rgba(6,12,28,0.7)', border: '1px solid rgba(255,255,255,0.07)',
+          borderRadius: '20px', padding: '24px 28px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
         }},
           points.map((point, i) => {
             const { alpha, offsetY } = ptItems[i] || { alpha: 0, offsetY: 30 };
             return React.createElement('div', { key: i, style: {
-              display: 'flex', alignItems: 'flex-start', gap: '20px',
+              display: 'flex', alignItems: 'flex-start', gap: '16px',
               opacity: alpha, transform: `translateY(${offsetY}px)`,
             }},
               React.createElement('div', { style: {
                 flexShrink: 0, width: '10px', height: '10px',
                 borderRadius: '50%', background: AMBER,
-                marginTop: '14px',
-                boxShadow: `0 0 12px rgba(255,179,0,0.6)`,
+                marginTop: '12px',
+                boxShadow: `0 0 12px rgba(255,179,0,0.8)`,
               }}),
               React.createElement('p', { style: {
-                color: WHITE, fontSize: hasImage ? '32px' : '38px', fontWeight: 500,
-                lineHeight: 1.45, margin: 0, flex: 1,
+                color: WHITE, fontSize: hasImage ? '28px' : '34px', fontWeight: 500,
+                lineHeight: 1.38, margin: 0, flex: 1,
+                wordBreak: 'break-word', overflowWrap: 'break-word',
               }}, point)
             );
           })
@@ -129,18 +145,17 @@ const InsightScene = ({ scene }) => {
 
         // Source note
         sourceNote && React.createElement('p', { style: {
-          color: 'rgba(175,210,230,0.55)', fontSize: '24px', fontWeight: 400,
-          marginTop: '36px', marginBottom: 0, fontStyle: 'italic',
+          color: 'rgba(175,210,230,0.6)', fontSize: '22px', fontWeight: 500,
+          marginTop: '24px', marginBottom: 0, fontStyle: 'italic',
           opacity: noteAlpha,
-        }}, `— ${sourceNote}`)
+        }}, `📌 Nguồn tài liệu: ${sourceNote}`)
       ),
 
-      // RIGHT: image column (only when image_url is set)
+      // RIGHT: image column
       hasImage && React.createElement('div', { style: {
         flex: '0 0 42%', position: 'relative', overflow: 'hidden',
         opacity: headAlpha,
       }},
-        // Image
         React.createElement('img', {
           src: imageUrl,
           style: {
@@ -149,16 +164,14 @@ const InsightScene = ({ scene }) => {
             display: 'block',
           },
         }),
-        // Gradient overlay left edge (blends into bg)
         React.createElement('div', { style: {
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg, rgba(6,6,20,0.85) 0%, rgba(6,6,20,0.1) 35%, transparent 60%)',
+          background: 'linear-gradient(90deg, rgba(6,6,20,0.92) 0%, rgba(6,6,20,0.15) 30%, transparent 60%)',
           pointerEvents: 'none',
         }}),
-        // Gradient overlay bottom
         React.createElement('div', { style: {
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: '200px',
-          background: 'linear-gradient(0deg, rgba(6,6,20,0.6) 0%, transparent 100%)',
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: '180px',
+          background: 'linear-gradient(0deg, rgba(6,6,20,0.7) 0%, transparent 100%)',
           pointerEvents: 'none',
         }})
       )
@@ -166,10 +179,10 @@ const InsightScene = ({ scene }) => {
 
     // Watermark
     React.createElement('div', { style: {
-      position: 'absolute', bottom: '52px', right: '90px',
-      color: 'rgba(255,255,255,0.18)', fontSize: '22px',
-      fontWeight: 500, letterSpacing: '3px', opacity: headAlpha,
-    }}, 'HUYBRID • TECH NEWS')
+      position: 'absolute', bottom: '44px', right: '80px',
+      color: 'rgba(255,255,255,0.22)', fontSize: '20px',
+      fontWeight: 600, letterSpacing: '3px', opacity: headAlpha,
+    }}, 'HUYBRID NETWORK')
   );
 };
 
